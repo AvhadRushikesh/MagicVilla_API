@@ -1,15 +1,9 @@
-using Serilog;
+
+using MagicVilla_VillaAPI.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-// Configuring the Logger Configuration using Siri log
-// Generate Log .txt file
-Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
-    .WriteTo.File("log/villaLogs.txt", rollingInterval: RollingInterval.Day).CreateLogger();
-// Modify the application that it does not have to use built in one (Console) it will rather use sirilog logging
-builder.Host.UseSerilog();
 
 
 builder.Services.AddControllers(options =>
@@ -19,6 +13,8 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<ILogging, Logging>();
 
 var app = builder.Build();
 
