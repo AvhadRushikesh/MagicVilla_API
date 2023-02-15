@@ -1,6 +1,16 @@
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Configuring the Logger Configuration using Siri log
+// Generate Log .txt file
+Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
+    .WriteTo.File("log/villaLogs.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+// Modify the application that it does not have to use built in one (Console) it will rather use sirilog logging
+builder.Host.UseSerilog();
+
 
 builder.Services.AddControllers(options =>
 {
