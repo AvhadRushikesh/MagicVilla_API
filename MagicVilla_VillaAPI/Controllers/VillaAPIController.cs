@@ -53,7 +53,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<VillaDto> CreateVilla([FromBody]VillaDto villaDto)
+        public ActionResult<VillaDto> CreateVilla([FromBody]VillaCreateDto villaDto)
         {            
             if (_db.Villas.FirstOrDefault(u => u.Name.ToLower() == villaDto.Name.ToLower()) != null)
             {
@@ -64,15 +64,11 @@ namespace MagicVilla_VillaAPI.Controllers
             {
                 return BadRequest(villaDto);
             }
-            if (villaDto.Id > 0)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
+
             Villa model = new()
             {
                 Amenity = villaDto.Amenity,
                 Details = villaDto.Details,
-                Id = villaDto.Id,
                 ImageUrl = villaDto.ImageUrl,
                 Name = villaDto.Name,
                 Occupancy = villaDto.Occupancy,
@@ -82,6 +78,7 @@ namespace MagicVilla_VillaAPI.Controllers
 
             _db.Villas.Add(model);
             _db.SaveChanges();
+
             return NoContent();
         }
 
@@ -108,7 +105,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateVilla(int id, [FromBody]VillaDto villaDto)
+        public IActionResult UpdateVilla(int id, [FromBody]VillaUpdateDto villaDto)
         {
             if (villaDto == null || id != villaDto.Id)
             {
@@ -134,7 +131,7 @@ namespace MagicVilla_VillaAPI.Controllers
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaDto> patchDTO)
+        public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDto> patchDTO)
         {
             if (patchDTO == null || id == 0)
             {
@@ -148,7 +145,7 @@ namespace MagicVilla_VillaAPI.Controllers
                 return BadRequest();
             }
 
-            VillaDto villaDto = new()
+            VillaUpdateDto villaDto = new() 
             {
                 Amenity = villa.Amenity,
                 Details = villa.Details,
