@@ -57,7 +57,6 @@ namespace MagicVilla_VillaAPI.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<VillaDto>> CreateVilla([FromBody]VillaCreateDto createDto)
@@ -76,8 +75,7 @@ namespace MagicVilla_VillaAPI.Controllers
             Villa model = _mapper.Map<Villa>(createDto);
 
             await _dbVilla.CreateAsync(model);
-            //return NoContent();
-            return CreatedAtRoute("GetVilla", new { id = model.Id }, model);
+            return NoContent();
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
