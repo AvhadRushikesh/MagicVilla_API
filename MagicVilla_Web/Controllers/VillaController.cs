@@ -29,5 +29,27 @@ namespace MagicVilla_Web.Controllers
             }
             return View(list);
         }
+
+        // This will be [HttpGet] action & then we will only return the View
+        public async Task<IActionResult> CreateVilla()
+        {            
+            return View();
+        }
+
+        //  When someone hits the create button this is where it will come
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateVilla(VillaCreateDto model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _villaService.CreateAsync<APIResponse>(model);
+                if (response != null && response.IsSuccess)
+                {
+                    return RedirectToAction(nameof(IndexVilla));
+                }
+            }            
+            return View(model);
+        }
     }
 }
