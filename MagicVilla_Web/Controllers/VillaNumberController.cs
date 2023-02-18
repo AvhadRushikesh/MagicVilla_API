@@ -39,7 +39,7 @@ namespace MagicVilla_Web.Controllers
         public async Task<IActionResult> CreateVillaNumber()
         {
             VillaNumberCreateVM villaNumberVM = new();
-            var response = await _villaNumberService.GetAllAsync<APIResponse>();
+            var response = await _villaService.GetAllAsync<APIResponse>();
             if (response != null && response.IsSuccess)
             {
                 villaNumberVM.VillaList = JsonConvert.DeserializeObject<List<VillaDto>>
