@@ -35,11 +35,17 @@ namespace MagicVilla_VillaAPI.Repository
             // Check username & password available in table
             var user = _db.LocalUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDto.UserName.ToLower()
             && u.Password == loginRequestDto.Password);
+
             // If Not Found return Null
             if (user == null)
             {
-                return null;
+                return new LoginResponseDto()
+                {
+                    Token = "",
+                    User = null
+                };
             }
+
             // If user was found generate JWT token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_secretKey); // Convert Secret key string to Byte
