@@ -2,6 +2,10 @@
 using MagicVilla_VillaAPI.Models;
 using MagicVilla_VillaAPI.Models.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace MagicVilla_VillaAPI.Repository
 {
@@ -37,7 +41,29 @@ namespace MagicVilla_VillaAPI.Repository
                 return null;
             }
             // If user was found generate JWT token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_secretKey); // Convert Secret key string to Byte
 
+            // Set Properties for Token Generation
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            // Generate Token
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            LoginResponseDto loginResponseDto = new LoginResponseDto()
+            {
+                Token = tokenHandler.WriteToken(token),
+                User = user,
+            };
+            return loginResponseDto;
         }
 
         // Add New Local User in Our Database
