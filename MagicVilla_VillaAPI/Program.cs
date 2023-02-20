@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,13 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVillaNumberRepository, VillaNumberRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+// API Versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+});
 
 // Add Bearer Authentication
 var Key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
