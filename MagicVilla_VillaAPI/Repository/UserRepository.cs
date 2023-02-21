@@ -15,14 +15,17 @@ namespace MagicVilla_VillaAPI.Repository
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
         private string _secretKey;
         public UserRepository(ApplicationDbContext db,IConfiguration configuration,
-            UserManager<ApplicationUser> userManager,IMapper mapper)
+            UserManager<ApplicationUser> userManager,IMapper mapper,
+            RoleManager<IdentityRole> roleManager)
         {
             _db = db;
             _userManager = userManager;
             _mapper = mapper;
+            _roleManager = roleManager;
             _secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
         // Check User Name is Unique or Not
@@ -103,10 +106,26 @@ namespace MagicVilla_VillaAPI.Repository
             {
                 /*  We will just write the password & it will automatically hash that
                     and create the user */
+
+                #region Testing Role
+                var roletoadd = registrationRequestDto.Role;
+                #endregion
                 var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "admin");
+                    if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("admin"));
+                        await _roleManager.CreateAsync(new IdentityRole("customer"));
+                    }
+                    if (roletoadd == "admin")
+                    {
+                        await _userManager.AddToRoleAsync(user, "admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "customer");
+                    }
                     var userToReturn = _db.ApplicationUsers
                         .FirstOrDefault(u => u.UserName == registrationRequestDto.UserName);
                     return _mapper.Map<UserDto>(userToReturn);
