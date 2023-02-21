@@ -89,20 +89,34 @@ namespace MagicVilla_VillaAPI.Repository
         }
 
         // Add New Local User in Our Database
-        public async Task<LocalUser> Register(RegistrationRequestDto registrationRequestDto)
+        public async Task<UserDto> Register(RegistrationRequestDto registrationRequestDto)
         {
-            LocalUser user = new LocalUser()
+            ApplicationUser user = new()
             {
                 // This is Manual Mapping we can use AutoMapper here
                 UserName = registrationRequestDto.UserName,
-                Password = registrationRequestDto.Password,
-                Name = registrationRequestDto.Name,
-                Role = registrationRequestDto.Role
+                Email = registrationRequestDto.UserName,
+                NormalizedEmail = registrationRequestDto.UserName.ToUpper(),
+                Name = registrationRequestDto.Name
             };
-            _db.LocalUsers.Add(user); // Add USer in LocalUsers table
-            await _db.SaveChangesAsync();
-            user.Password = ""; //  Make sure before return password is empty
-            return user;
+            try
+            {
+                /*  We will just write the password & it will automatically hash that
+                    and create the user */
+                var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "admin");
+                    var userToReturn = _db.ApplicationUsers
+                        .FirstOrDefault(u => u.UserName == registrationRequestDto.UserName);
+                    return _mapper.Map<UserDto>(userToReturn);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return new UserDto();
         }
     }
 }
