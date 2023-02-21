@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
     //[Route("api/[Controller]")]
     [Route("api/v{version:apiVersion}/VillaAPI")]
@@ -25,8 +25,8 @@ namespace MagicVilla_VillaAPI.Controllers
         public VillaAPIController(IVillaRepository _dbVilla, IMapper mapper)
         {
             this._dbVilla = _dbVilla;
-            this._mapper = mapper;
-            this._response = new();
+            _mapper = mapper;
+            _response = new();
         }
 
 

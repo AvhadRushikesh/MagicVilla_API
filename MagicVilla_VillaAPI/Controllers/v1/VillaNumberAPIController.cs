@@ -11,13 +11,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
     //[Route("api/[Controller]")]
     [Route("api/v{version:apiVersion}/VillaNumberAPI")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
     public class VillaNumberAPIController : ControllerBase
     {
         protected APIResponse _response;
@@ -28,20 +27,19 @@ namespace MagicVilla_VillaAPI.Controllers
         public VillaNumberAPIController(IVillaNumberRepository _dbVillaNumber, IMapper mapper, IVillaRepository dbVilla)
         {
             this._dbVillaNumber = _dbVillaNumber;
-            this._mapper = mapper;
-            this._response = new();
-            this._dbVilla = dbVilla;
+            _mapper = mapper;
+            _response = new();
+            _dbVilla = dbVilla;
         }
 
 
         [HttpGet]
-        [MapToApiVersion("1.0")]    //  We can remove this - it will automatically 1.0
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetVillaNumber()
         {
             try
             {
-                IEnumerable<VillaNumber> villaListNumberList = await _dbVillaNumber.GetAllAsync(includeProperties:"Villa");
+                IEnumerable<VillaNumber> villaListNumberList = await _dbVillaNumber.GetAllAsync(includeProperties: "Villa");
                 _response.Result = _mapper.Map<List<VillaNumberDto>>(villaListNumberList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -52,13 +50,6 @@ namespace MagicVilla_VillaAPI.Controllers
                 _response.ErrorMessages = new List<string> { ex.ToString() };
             }
             return _response;
-        }
-
-        [MapToApiVersion("2.0")]
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "Value1", "Value2" };
         }
 
 

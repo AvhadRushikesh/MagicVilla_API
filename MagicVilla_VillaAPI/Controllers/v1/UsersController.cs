@@ -3,7 +3,7 @@ using MagicVilla_VillaAPI.Models.Dto;
 using MagicVilla_VillaAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MagicVilla_VillaAPI.Controllers
+namespace MagicVilla_VillaAPI.Controllers.v1
 {
     [Route("api/v{version:apiVersion}/UsersAuth")]
     [ApiController]
@@ -14,8 +14,8 @@ namespace MagicVilla_VillaAPI.Controllers
         private APIResponse _response;
         public UsersController(IUserRepository userRepo)
         {
-            _userRepo= userRepo;
-            this._response = new APIResponse();
+            _userRepo = userRepo;
+            _response = new APIResponse();
         }
 
         [HttpPost("login")]
@@ -25,11 +25,11 @@ namespace MagicVilla_VillaAPI.Controllers
             if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
             {
                 _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
-                _response.IsSuccess= false;
+                _response.IsSuccess = false;
                 _response.ErrorMessages.Add("Username or Password is incorrect");
                 return BadRequest(_response);
             }
-            _response.StatusCode=System.Net.HttpStatusCode.OK;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
             _response.IsSuccess = true;
             _response.Result = loginResponse;
             return Ok(_response);
