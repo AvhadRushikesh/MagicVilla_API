@@ -71,7 +71,7 @@ namespace MagicVilla_VillaAPI.Repository
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
                     new Claim(ClaimTypes.Role, roles.FirstOrDefault())
                     /*  If we have multiple role we need to add foreach loop, through each
                         One of them & add roles in our claim  */
@@ -85,8 +85,7 @@ namespace MagicVilla_VillaAPI.Repository
             LoginResponseDto loginResponseDto = new LoginResponseDto()
             {
                 Token = tokenHandler.WriteToken(token),
-                User = _mapper.Map<UserDto>(user),
-                Role = roles.FirstOrDefault(),
+                User = _mapper.Map<UserDto>(user)
             };
             return loginResponseDto;
         }
