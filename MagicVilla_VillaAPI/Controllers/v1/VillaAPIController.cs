@@ -88,16 +88,19 @@ namespace MagicVilla_VillaAPI.Controllers.v1
                 if (id == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 var villa = await _dbVilla.GetAsync(u => u.Id == id);
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
                     return NotFound(_response);
                 }
                 _response.Result = _mapper.Map<VillaDto>(villa);
                 _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
                 return Ok(_response);
             }
             catch (Exception ex)
